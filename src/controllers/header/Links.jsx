@@ -1,25 +1,31 @@
 import React, {Component} from 'react';
 import LinkButton from "../../components/button/LinkButton";
-
-const headerStyle = {
-    marginTop: '10px',
-};
+import Container from "../../components/background/Container";
 
 export default class Links extends Component {
     render = () => {
         return (
             <>
-                <div className="container" style={headerStyle}>
-                    <div className="notification is-primary">
-                        <nav className="level">
+                <Container className="is-primary">
+                    <nav className="level">
+                        <div className="level-left">
                             <div className="level-item">
                                 <LinkButton
-                                    classes="is-primary"
-                                    text="Click Me!"/>
+                                    to="/compendium"
+                                    className="is-primary"
+                                    text="Compendium"/>
                             </div>
-                        </nav>
-                    </div>
-                </div>
+                        </div>
+                        <div className="level-right">
+                            <div className="level-item">
+                                <LinkButton
+                                    to="/user"
+                                    className="is-primary"
+                                    text="Login"/>
+                            </div>
+                        </div>
+                    </nav>
+                </Container>
             </>
         );
     };
