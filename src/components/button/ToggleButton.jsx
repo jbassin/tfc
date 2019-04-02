@@ -19,7 +19,7 @@ export default class ToggleButton extends Component {
     render = () => {
         return (
             <button
-                className={this.props.classes + " button"}
+                className={`button ${this.props.classes}`}
                 onClick={this.clickHandler}>
                 <span className="icon">
                     <i className={this.state.isActive ? this.props.activeIcon : this.props.inactiveIcon}/>

@@ -2,13 +2,13 @@ import React, { Component } from 'react';
 import Header from "./header/Header";
 
 class App extends Component {
-  render() {
-    return (
-      <>
-        <Header title="The Floating Cup"/>
-      </>
-    );
-  }
+    render() {
+        return (
+            <>
+                <Header title="The Floating Cup"/>
+            </>
+        );
+    }
 }
 
 export default App;
