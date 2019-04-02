@@ -6,7 +6,7 @@ export default class Links extends Component {
     render = () => {
         return (
             <>
-                <Container className="is-primary">
+                <Container>
                     <nav className="level">
                         <div className="level-left">
                             <div className="level-item">

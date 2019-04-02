@@ -9,7 +9,7 @@ export default class Container extends Component {
         return (
             <>
                 <div className="container" style={this.props.style ? this.props.style : defaultStyle}>
-                    <div className={`notification ${this.props.className}`}>
+                    <div className={`notification ${this.props.className ? this.props.className : 'is-primary'}`}>
                         { this.props.children }
                     </div>
                 </div>

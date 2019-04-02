@@ -1,10 +1,13 @@
 import React, {Component} from 'react';
+import Container from "../components/background/Container";
 
 export default class Hello extends Component {
     render = () => {
         return (
             <>
-                Hello World
+                <Container>
+                    Hello World
+                </Container>
             </>
         );
     };

@@ -24,7 +24,7 @@ export default class Header extends Component {
     render = () => {
         return (
             <>
-                <Container className="is-primary" style={headerStyle}>
+                <Container style={headerStyle}>
                     <nav className="level">
                         <div className="level-left">
                             <div className="level-item">
