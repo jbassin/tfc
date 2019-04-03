@@ -3,6 +3,7 @@ import { Route, Switch } from "react-router-dom";
 import Header from "./header/Header";
 import Hello from "./Hello";
 import NoPage from "./404/NoPage";
+import Compendium from "./compendium/Compendium";
 
 class App extends Component {
     render() {
@@ -14,6 +15,9 @@ class App extends Component {
                     <Route
                         exact path="/"
                         component={Hello}/>
+                    <Route
+                        path="/compendium"
+                        component={Compendium}/>
                     <Route component={NoPage}/>
                 </Switch>
             </>
