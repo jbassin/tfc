@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
-import * as R from 'ramda'
+import * as R from 'ramda';
+import * as u from 'uniqid';
+import { Link } from 'react-router-dom';
 
 export default class CompendiumRender extends Component {
     formatText = (text) => {
@@ -23,39 +25,71 @@ export default class CompendiumRender extends Component {
                     children={header}/>
             );
         }
+
         return (
             <p
-                key={R.isEmpty(line) ? `${lineNum}` : line}
+                key={u()}
                 children={this.transformText(line)}/>
         );
     };
 
     transformText = (line) => {
         let returnArray = [line];
-        returnArray = R.flatten(R.map(this.transformMatch('\\*', 'has-text-weight-bold'), returnArray));
-        returnArray = R.flatten(R.map(this.transformMatch('_', 'is-italic'), returnArray));
-        returnArray = R.flatten(R.map(this.transformMatch('`', 'is-family-monospace'), returnArray));
-        return R.flatten(returnArray);
+        returnArray = R.flatten(R.map(this.transformMatchSimple('\\*', 'has-text-weight-bold'), returnArray));
+        returnArray = R.flatten(R.map(this.transformMatchSimple('_', 'is-italic'), returnArray));
+        returnArray = R.flatten(R.map(this.transformMatchSimple('`', 'is-family-monospace'), returnArray));
+        returnArray = R.flatten(R.map(this.transformMatch(this.transformLink, new RegExp('(\\[{2}.+?\\]{2})', 'g')), returnArray));
+        return returnArray;
     };
 
-    transformMatch = R.curry((delimiter, className, line) => {
+    transformMatch = R.curry((mapFunction, pattern, line) => {
         if (R.type(line) !== 'String') return line;
-        const tester = R.match(new RegExp(`(${delimiter}.+?${delimiter})`, 'g'), line);
+        const tester = R.match(pattern, line);
         if (!R.isEmpty(tester)) {
-            const splitTester = R.split(new RegExp(`(${delimiter}.+?${delimiter})`, 'g'), line);
-            return R.map((item) => {
-                if (this.borderedBy(R.replace('\\', '', delimiter), item)) {
-                    return (
-                        <span
-                            key={item}
-                            className={className}
-                            children={this.transformText(this.dropEnds(item))}/>
-                    );
-                }
-                return this.transformText(item);
-            }, splitTester);
+            const splitTester = R.split(pattern, line);
+            return R.map(mapFunction, splitTester);
         }
         return [line];
+    });
+
+    transformTextSimple = R.curry((delimiter, className, item) => {
+        if (this.borderedBy(R.replace('\\', '', delimiter), item)) {
+            return (
+                <span
+                    key={u()}
+                    className={className}
+                    children={this.transformText(this.dropEnds(item))}/>
+            );
+        }
+        return this.transformText(item);
+    });
+
+    transformLink = R.curry((item) => {
+        if (R.startsWith('[', item) && R.endsWith(']', item)) {
+            const matches = R.filter(item => !R.isEmpty(item), R.split(new RegExp('(\\[[^\\[]*?[^\\]]])', 'g'), this.dropEnds(item)));
+            if (R.length(matches) === 1) {
+                return (
+                  <Link
+                      key={u()}
+                      to={`/compendium/entry/${this.dropEnds(R.head(matches))}`}>
+                      {`${this.dropEnds(R.head(matches))}`}
+                  </Link>
+                );
+            } else {
+                return (
+                    <Link
+                        key={u()}
+                        to={`/compendium/entry/${this.dropEnds(R.head(matches))}`}>
+                        {`${this.dropEnds(R.last(matches))}`}
+                    </Link>
+                );
+            }
+        }
+        return this.transformText(item);
+    });
+
+    transformMatchSimple = R.curry((delimiter, className, line) => {
+        return this.transformMatch(this.transformTextSimple(delimiter, className), new RegExp(`(${delimiter}.+?${delimiter})`, 'g'), line)
     });
 
     borderedBy = (delimiter, item) => {
