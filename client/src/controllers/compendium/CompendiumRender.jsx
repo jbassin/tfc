@@ -1,9 +1,16 @@
-import React, {Component} from 'react';
+import React, {Component } from 'react';
 import * as R from 'ramda';
 import * as u from 'uniqid';
 import { Link } from 'react-router-dom';
 
 export default class CompendiumRender extends Component {
+    constructor(props) {
+        super(props);
+        this.tableActive = 0;
+        this.tableHead = null;
+        this.tableBody = [];
+    }
+
     formatText = (text) => {
         const splitText = R.split('\n', text);
         return R.addIndex(R.map)(this.formatLine, splitText);
@@ -26,11 +33,67 @@ export default class CompendiumRender extends Component {
             );
         }
 
+        if (R.trim(line) === '{{') {
+            this.tableActive = true;
+            this.tableHead = (<thead key={u()}/>);
+            this.tableBody = ([]);
+            return;
+        }
+
+        if (R.trim(line) === '}}') {
+            this.tableActive = false;
+            return (
+                <table
+                    className="table is-fullwidth is-primary"
+                    key={u()}>
+                    { this.tableHead }
+                    <tbody
+                        className="has-background-primary"
+                        key={u()}
+                        children={this.tableBody}/>
+                </table>
+            );
+        }
+
+        if (this.tableActive) {
+            if (R.head(R.trim(line)) === '<' && R.last(R.trim(line)) === '>') {
+                this.tableHead = (
+                    <thead
+                        className="has-background-primary has-text-white"
+                        key={u()}>
+                        <tr>
+                            {R.map(item => <th className="has-text-white" key={u()}> {R.trim(item)} </th>, R.split('|', this.dropEnds(R.trim(line))))}
+                        </tr>
+                    </thead>
+                );
+            } else {
+                this.tableBody = R.append((
+                    <tr key={u()}>
+                        {R.map(item => <td className="has-text-white" key={u()}> {this.fullTransform(R.trim(item))} </td>, R.split('|', line))}
+                    </tr>
+                ), this.tableBody);
+            }
+            return;
+        }
+
+        if (R.isEmpty(R.trim(line))) {
+            return (
+                <br key={u()}/>
+            );
+        }
+
         return (
             <p
                 key={u()}
-                children={this.transformText(line)}/>
+                children={this.fullTransform(line)}/>
         );
+    };
+
+    fullTransform = (line) => {
+        return R.map((item) => {
+            if (R.type(item) !== 'String') return item;
+            return R.replace('\\`', '`', R.replace('\\_', '_', R.replace('\\*', '*', item)));
+        }, this.transformText(line))
     };
 
     transformText = (line) => {
@@ -71,7 +134,7 @@ export default class CompendiumRender extends Component {
                 return (
                   <Link
                       key={u()}
-                      to={`/compendium/entry/${this.dropEnds(R.head(matches))}`}>
+                      to={`/compendium/entry/${R.replace(/\s/g, '_', R.toLower(this.dropEnds(R.head(matches))))}`}>
                       {`${this.dropEnds(R.head(matches))}`}
                   </Link>
                 );
@@ -79,7 +142,7 @@ export default class CompendiumRender extends Component {
                 return (
                     <Link
                         key={u()}
-                        to={`/compendium/entry/${this.dropEnds(R.head(matches))}`}>
+                        to={`/compendium/entry/${R.replace(/\s/g, '_', R.toLower(this.dropEnds(R.head(matches))))}`}>
                         {`${this.dropEnds(R.last(matches))}`}
                     </Link>
                 );
@@ -89,7 +152,7 @@ export default class CompendiumRender extends Component {
     });
 
     transformMatchSimple = R.curry((delimiter, className, line) => {
-        return this.transformMatch(this.transformTextSimple(delimiter, className), new RegExp(`(${delimiter}.+?${delimiter})`, 'g'), line)
+        return this.transformMatch(this.transformTextSimple(delimiter, className), new RegExp(`(?<!\\\\)(${delimiter}.+?${delimiter})`, 'g'), line)
     });
 
     borderedBy = (delimiter, item) => {
