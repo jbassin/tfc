@@ -16,7 +16,7 @@ export default class CompendiumRender extends Component {
         return R.addIndex(R.map)(this.formatLine, splitText);
     };
 
-    formatLine = (line, lineNum) => {
+    formatLine = (line, lineNum) => {   
         const headerTest = R.match(/(?<numbers>^#+\s)(?<header>.+)/g, line);
         if (!R.isEmpty(headerTest)) {
             const [intensity, header] = R.split(/ (.*)/, R.head(headerTest));

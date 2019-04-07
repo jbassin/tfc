@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import { Route, Switch } from "react-router-dom";
+import { Route, Switch, Redirect } from "react-router-dom";
 import Header from "./header/Header";
 import Hello from "./Hello";
 import NoPage from "./404/NoPage";
-import Compendium from "./compendium/Compendium";
+import CompendiumEntry from "./compendium/CompendiumEntry";
 
 class App extends Component {
     render() {
@@ -12,12 +12,20 @@ class App extends Component {
                 <Header
                     title="The Floating Cup"/>
                 <Switch>
+                    {/* The Home Page */}
                     <Route
                         exact path="/"
                         component={Hello}/>
+
+                    {/*  The Compendium Routes  */}
                     <Route
-                        path="/compendium"
-                        component={Compendium}/>
+                        exact path="/compendium"
+                        render={() => (<Redirect to="/compendium/index"/>)}/>
+                    <Route
+                        path="/compendium/:entry"
+                        component={CompendiumEntry}/>
+
+                    {/*  404 Error Page  */}
                     <Route component={NoPage}/>
                 </Switch>
             </>
