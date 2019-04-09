@@ -6,9 +6,17 @@ export default class CompendiumCreate extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            text: "",
+            text: this.props.text ? this.props.text : '',
         }
     }
+
+    componentDidUpdate = (prevProps) => {
+        if (prevProps.text !== this.props.text) {
+            this.setState({
+                text: this.props.text ? this.props.text : '',
+            })
+        }
+    };
 
     textAreaChange = (e) => {
         this.setState({

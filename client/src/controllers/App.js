@@ -4,6 +4,7 @@ import Header from "./header/Header";
 import Hello from "./Hello";
 import NoPage from "./404/NoPage";
 import CompendiumEntry from "./compendium/CompendiumEntry";
+import CompendiumEdit from "./compendium/CompendiumEdit";
 
 class App extends Component {
     render() {
@@ -20,10 +21,13 @@ class App extends Component {
                     {/*  The Compendium Routes  */}
                     <Route
                         exact path="/compendium"
-                        render={() => (<Redirect to="/compendium/index"/>)}/>
+                        render={() => (<Redirect to="/compendium/entry/index"/>)}/>
                     <Route
-                        path="/compendium/:entry"
+                        path="/compendium/entry/:entry"
                         component={CompendiumEntry}/>
+                    <Route
+                        path="/compendium/edit/:entry"
+                        component={CompendiumEdit}/>
 
                     {/*  404 Error Page  */}
                     <Route component={NoPage}/>

@@ -4,7 +4,7 @@ const { getCollection } = require('../db');
 
 const compendium = getCollection('compendium');
 
-router.post('/api/compendium/entry', async ({ body: { title } }, res) => {
+router.post('/api/compendium/get', async ({ body: { title } }, res) => {
     const entries = await compendium.lookupByKeys([title]);
     if (entries.length < 1) {
         res.json({
